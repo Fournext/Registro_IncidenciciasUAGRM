@@ -21,8 +21,12 @@ export default function P_Reportante() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
+  const obtenerSesion = () => {
+    return N_Reportante.obtenerSesion() || ({} as any);
+  };
+
   // Estados del Perfil
-  const reportante = JSON.parse(localStorage.getItem("reportante") || "{}");
+  const [reportante, setReportante] = useState(obtenerSesion());
   const [nombre, setNombre] = useState(reportante.nombre || "");
   const [apellido, setApellido] = useState(reportante.apellido || "");
   const [telefono, setTelefono] = useState(reportante.telefono || "");
@@ -48,7 +52,8 @@ export default function P_Reportante() {
         ...(contrasena && { contrasena }),
       };
       const result = await N_Reportante.editar(reportanteActualizar);
-      localStorage.setItem("reportante", JSON.stringify(result));
+      N_Reportante.guardarSesion(result);
+      setReportante(result);
       alert("Reportante Actualizado con éxito");
       setIsProfileModalOpen(false);
     } catch (error) {

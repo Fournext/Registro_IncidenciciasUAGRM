@@ -38,4 +38,13 @@ export class N_Decano {
   static async buscarPorEmail(email: string) {
     return await D_Decano.buscarPorEmail(email);
   }
+
+  static obtenerSesion(): Decano | null {
+    const data = D_Decano.obtenerSesion();
+    return data ? JSON.parse(data) : null;
+  }
+
+  static guardarSesion(decano: Decano): void {
+    D_Decano.guardarSesion(JSON.stringify(decano));
+  }
 }

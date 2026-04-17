@@ -48,4 +48,12 @@ export class D_Reportante {
     ]);
     return result.rows[0];
   }
+
+  static obtenerSesion(): string | null {
+    return localStorage.getItem("reportante");
+  }
+
+  static guardarSesion(data: string): void {
+    localStorage.setItem("reportante", data);
+  }
 }

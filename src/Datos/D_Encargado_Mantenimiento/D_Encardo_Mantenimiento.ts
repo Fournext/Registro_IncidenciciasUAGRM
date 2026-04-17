@@ -70,4 +70,12 @@ export class D_Encargado_Mantenimiento {
     );
     return result.rows[0];
   }
+
+  static obtenerSesion(): string | null {
+    return localStorage.getItem("encargado");
+  }
+
+  static guardarSesion(data: string): void {
+    localStorage.setItem("encargado", data);
+  }
 }

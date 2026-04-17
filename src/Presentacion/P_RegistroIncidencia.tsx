@@ -11,6 +11,7 @@ import {
 import { N_Facultad } from "../Negocio/N_Facultad";
 import { N_Clasificacion_Incidencia } from "../Negocio/N_Clasificacion_Incidencia";
 import { N_Incidencia } from "../Negocio/N_Incidencia";
+import { N_Reportante } from "../Negocio/N_Reportante";
 
 export default function P_RegistroIncidencia() {
   const [titulo, setTitulo] = useState("");
@@ -23,7 +24,11 @@ export default function P_RegistroIncidencia() {
   const [facultades, setFacultades] = useState<any[]>([]);
   const [clasificaciones, setClasificaciones] = useState<any[]>([]);
 
-  const reportante = JSON.parse(localStorage.getItem("reportante") || "{}");
+  const obtenerSesion = () => {
+    return (N_Reportante.obtenerSesion() || {}) as any;
+  };
+
+  const reportante = obtenerSesion();
 
   {
     /* =====================================================================

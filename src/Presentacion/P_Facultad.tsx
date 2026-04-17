@@ -11,6 +11,7 @@ import {
   Building2,
 } from "lucide-react";
 import { N_Facultad } from "../Negocio/N_Facultad";
+import { N_Decano } from "../Negocio/N_Decano";
 import { createPortal } from "react-dom";
 
 export default function P_Facultad() {
@@ -18,8 +19,13 @@ export default function P_Facultad() {
   const [isRegistModalOpen, setIsRegistModalOpen] = useState(false);
   const [isFacultadModalOpen, setIsFacultadModalOpen] = useState(false);
 
+  // Función propia de la capa de presentación para obtener la sesión
+  const obtenerSesionDecano = () => {
+    return N_Decano.obtenerSesion() || ({} as any);
+  };
+
   // Estados Locales
-  const decano = JSON.parse(localStorage.getItem("decano") || "{}");
+  const decano = obtenerSesionDecano();
   const [facultades, setFacultades] = useState<any[]>([]);
 
   const [nombre, setNombre] = useState("");

@@ -3,10 +3,16 @@ import { Building2, LogOut, User, Wrench } from "lucide-react";
 
 import P_Incidencia from "./P_Incidencia";
 import P_CerrarSesion from "./P_CerrarSesion";
+import { N_Encargado_Mantenimiento } from "../Negocio/N_Encargado_Mantenimiento";
 
 export default function P_Panel_Encargado() {
-  // 1. Obtenemos los datos del encargado desde el localStorage
-  const encargado = JSON.parse(localStorage.getItem("encargado") || "{}");
+  // Función propia de la capa de presentación para obtener la sesión
+  const obtenerSesionEncargado = () => {
+    return N_Encargado_Mantenimiento.obtenerSesion() || ({} as any);
+  };
+
+  // 1. Obtenemos los datos del encargado
+  const encargado = obtenerSesionEncargado();
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   return (

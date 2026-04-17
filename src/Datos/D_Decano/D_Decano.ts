@@ -51,4 +51,12 @@ export class D_Decano {
     ]);
     return result.rows[0];
   }
+
+  static obtenerSesion(): string | null {
+    return localStorage.getItem("decano");
+  }
+
+  static guardarSesion(data: string): void {
+    localStorage.setItem("decano", data);
+  }
 }

@@ -17,6 +17,12 @@ import {
 import { N_Incidencia } from "../Negocio/N_Incidencia";
 import { N_Encargado_Mantenimiento } from "../Negocio/N_Encargado_Mantenimiento";
 import { N_Cierre_Incidencia } from "../Negocio/N_Cierre_Incidencia";
+import { N_Reportante } from "../Negocio/N_Reportante";
+import { N_Decano } from "../Negocio/N_Decano";
+
+const obtenerSesionDecano = () => N_Decano.obtenerSesion();
+const obtenerSesionReportante = () => N_Reportante.obtenerSesion();
+const obtenerSesionEncargado = () => N_Encargado_Mantenimiento.obtenerSesion();
 
 export default function P_Incidencia() {
   const [incidencias, setIncidencias] = useState<any[]>([]);
@@ -143,7 +149,7 @@ export default function P_Incidencia() {
       setIncidencia(null);
       setIdEncargado(0);
 
-      const decano = JSON.parse(localStorage.getItem("decano") || "null");
+      const decano = obtenerSesionDecano();
       if (decano?.id) listarPorFacultadDecano(decano.id);
     } catch (error) {
       console.error(error);
@@ -177,7 +183,7 @@ export default function P_Incidencia() {
           }),
       );
 
-      const encargado = JSON.parse(localStorage.getItem("encargado") || "null");
+      const encargado = obtenerSesionEncargado();
 
       const cierre = {
         id: 0,
@@ -245,13 +251,9 @@ export default function P_Incidencia() {
         setCierreSeleccionado(null);
         setIncidencia(null);
 
-        const reportante = JSON.parse(
-          localStorage.getItem("reportante") || "null",
-        );
-        const decano = JSON.parse(localStorage.getItem("decano") || "null");
-        const encargado = JSON.parse(
-          localStorage.getItem("encargado") || "null",
-        );
+        const reportante = obtenerSesionReportante();
+        const decano = obtenerSesionDecano();
+        const encargado = obtenerSesionEncargado();
 
         if (rolActual === "reportante" && reportante?.id)
           listarPorReportante(reportante.id);
@@ -277,9 +279,9 @@ export default function P_Incidencia() {
   }, [listarEncargadosMantenimiento]);
 
   useEffect(() => {
-    const reportante = JSON.parse(localStorage.getItem("reportante") || "null");
-    const decano = JSON.parse(localStorage.getItem("decano") || "null");
-    const encargado = JSON.parse(localStorage.getItem("encargado") || "null");
+    const reportante = obtenerSesionReportante();
+    const decano = obtenerSesionDecano();
+    const encargado = obtenerSesionEncargado();
 
     if (reportante?.id) {
       setRolActual("reportante");

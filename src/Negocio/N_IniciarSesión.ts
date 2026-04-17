@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { N_Reportante } from "./N_Reportante";
 import { N_Decano } from "./N_Decano";
 import { N_Encargado_Mantenimiento } from "./N_Encargado_Mantenimiento";
+import { N_CerrarSesion } from "./N_CerrarSesion";
 export class N_InicioSesión {
   static async loginReportante(email: string, contrasena: string) {
     const reportante = await N_Reportante.buscarPorEmail(email);
@@ -20,6 +21,7 @@ export class N_InicioSesión {
     }
 
     const { contrasena: _, ...usuarioSeguro } = reportante;
+    N_Reportante.guardarSesion(usuarioSeguro);
     return usuarioSeguro;
   }
   static async loginDecano(
@@ -47,6 +49,7 @@ export class N_InicioSesión {
     }
 
     const { contrasena: _, ...decanoSeguro } = decano;
+    N_Decano.guardarSesion(decanoSeguro);
     return decanoSeguro;
   }
   static async loginMantenimiento(telefono: string, contrasena: string) {
@@ -67,7 +70,7 @@ export class N_InicioSesión {
     }
 
     const { contrasena: _, ...mantenimientoSeguro } = mantenimiento;
+    N_Encargado_Mantenimiento.guardarSesion(mantenimientoSeguro);
     return mantenimientoSeguro;
   }
-  
 }

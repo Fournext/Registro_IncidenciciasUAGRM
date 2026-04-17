@@ -27,7 +27,12 @@ export default function P_Decano() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-  const decano = JSON.parse(localStorage.getItem("decano") || "{}");
+  const obtenerSesion = () => {
+    return N_Decano.obtenerSesion() || ({} as any);
+  };
+
+  // Estados del Perfil
+  const [decano, setDecano] = useState(obtenerSesion());
   const [nombre, setNombre] = useState(decano.nombre || "");
   const [apellido, setApellido] = useState(decano.apellido || "");
   const [telefono, setTelefono] = useState(decano.telefono || "");
@@ -56,7 +61,8 @@ export default function P_Decano() {
         credencial_institucional,
       };
       const result = await N_Decano.editar(datosActualizados);
-      localStorage.setItem("decano", JSON.stringify(result));
+      N_Decano.guardarSesion(result);
+      setDecano(result);
       alert("Decano Actualizado con éxito");
       setIsProfileModalOpen(false);
     } catch (error) {

@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { LogIn, X, Mail, Lock, Phone, Contact } from "lucide-react";
 import { N_InicioSesión } from "../Negocio/N_IniciarSesión";
 import { useNavigate } from "react-router-dom";
+import { N_Reportante } from "../Negocio/N_Reportante";
+import { N_Decano } from "../Negocio/N_Decano";
+import { N_Encargado_Mantenimiento } from "../Negocio/N_Encargado_Mantenimiento";
+import { N_CerrarSesion } from "../Negocio/N_CerrarSesion";
 
 interface Props {
   onClose: () => void;
@@ -21,35 +25,23 @@ export default function P_InicioSesion({ onClose }: Props) {
     e.preventDefault();
     try {
       if (loginRole === "reportante") {
-        const reportante = await N_InicioSesión.loginReportante(
-          email,
-          contrasena,
-        );
+        await N_InicioSesión.loginReportante(email, contrasena);
         onClose();
         alert("Reportante Autenticado con éxito");
-        localStorage.removeItem("reportante");
-        localStorage.setItem("reportante", JSON.stringify(reportante));
         navigate("/reportante");
       } else if (loginRole === "decano") {
-        const decano = await N_InicioSesión.loginDecano(
+        await N_InicioSesión.loginDecano(
           email,
           contrasena,
           credencial_instirucional,
         );
         onClose();
         alert("Decano Autenticado con éxito");
-        localStorage.removeItem("decano");
-        localStorage.setItem("decano", JSON.stringify(decano));
         navigate("/decano");
       } else if (loginRole === "encargado") {
-        const encargado = await N_InicioSesión.loginMantenimiento(
-          telefono,
-          contrasena,
-        );
+        await N_InicioSesión.loginMantenimiento(telefono, contrasena);
         onClose();
         alert("Encargado de Mantenimiento Autenticado con éxito");
-        localStorage.removeItem("encargado");
-        localStorage.setItem("encargado", JSON.stringify(encargado));
         navigate("/encargado");
       }
     } catch (error) {

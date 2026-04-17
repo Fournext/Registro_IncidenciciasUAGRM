@@ -39,4 +39,13 @@ export class N_Reportante {
   static async buscarPorEmail(email: string) {
     return await D_Reportante.buscarPorEmail(email);
   }
+
+  static obtenerSesion(): Reportante | null {
+    const data = D_Reportante.obtenerSesion();
+    return data ? JSON.parse(data) : null;
+  }
+
+  static guardarSesion(reportante: Reportante): void {
+    D_Reportante.guardarSesion(JSON.stringify(reportante));
+  }
 }

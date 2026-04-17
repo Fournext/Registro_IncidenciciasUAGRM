@@ -47,4 +47,13 @@ export class N_Encargado_Mantenimiento {
   static async obtenerEncargadoPorId(id_encargado: number) {
     return await D_Encargado_Mantenimiento.obtenerEncargadoPorId(id_encargado);
   }
+
+  static obtenerSesion(): Encargado_Mantenimiento | null {
+    const data = D_Encargado_Mantenimiento.obtenerSesion();
+    return data ? JSON.parse(data) : null;
+  }
+
+  static guardarSesion(encargado: Encargado_Mantenimiento): void {
+    D_Encargado_Mantenimiento.guardarSesion(JSON.stringify(encargado));
+  }
 }
