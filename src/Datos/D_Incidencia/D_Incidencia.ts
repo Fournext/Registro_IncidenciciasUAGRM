@@ -41,10 +41,20 @@ export class D_Incidencia {
   }
 
   static async asignarEncargado(id_incidencia: number, id_encargado: number) {
-    query("UPDATE incidencia SET id_encargado = $1 WHERE id = $2 RETURNING *", [
-      id_encargado,
-      id_incidencia,
-    ]);
+    const result = await query(
+      "UPDATE incidencia SET id_encargado = $1 WHERE id = $2 RETURNING *",
+      [id_encargado, id_incidencia],
+    );
+    return result.rows[0];
+  }
+
+  static guardarIncidenciaSeleccionada(incidencia: any) {
+    localStorage.setItem("incidencia_seleccionada", JSON.stringify(incidencia));
+  }
+
+  static obtenerIncidenciaSeleccionada() {
+    const data = localStorage.getItem("incidencia_seleccionada");
+    return data ? JSON.parse(data) : null;
   }
 
   static async actualizarEstado(id_incidencia: number, estado: string) {

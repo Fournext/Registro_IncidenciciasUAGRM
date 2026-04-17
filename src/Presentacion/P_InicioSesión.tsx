@@ -2,10 +2,6 @@ import React, { useState } from "react";
 import { LogIn, X, Mail, Lock, Phone, Contact } from "lucide-react";
 import { N_InicioSesión } from "../Negocio/N_IniciarSesión";
 import { useNavigate } from "react-router-dom";
-import { N_Reportante } from "../Negocio/N_Reportante";
-import { N_Decano } from "../Negocio/N_Decano";
-import { N_Encargado_Mantenimiento } from "../Negocio/N_Encargado_Mantenimiento";
-import { N_CerrarSesion } from "../Negocio/N_CerrarSesion";
 
 interface Props {
   onClose: () => void;

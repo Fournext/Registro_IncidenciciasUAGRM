@@ -132,8 +132,23 @@ export class N_Incidencia {
   };
 
   static async asignarEncargado(id_incidencia: number, id_encargado: number) {
+    if (!id_incidencia) {
+      throw new Error("No se ha seleccionado una incidencia válida.");
+    }
+    if (!id_encargado) {
+      throw new Error("Por favor selecciona un encargado de la lista.");
+    }
+
     await N_Incidencia.actualizarEstado(id_incidencia, "En Proceso");
-    await D_Incidencia.asignarEncargado(id_incidencia, id_encargado);
+    return await D_Incidencia.asignarEncargado(id_incidencia, id_encargado);
+  }
+
+  static seleccionarIncidencia(incidencia: any) {
+    D_Incidencia.guardarIncidenciaSeleccionada(incidencia);
+  }
+
+  static obtenerIncidenciaSeleccionada() {
+    return D_Incidencia.obtenerIncidenciaSeleccionada();
   }
 
   static async actualizarEstado(id_incidencia: number, estado: string) {
