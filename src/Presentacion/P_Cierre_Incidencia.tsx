@@ -1,14 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import {
-  X,
-  CheckCircle,
-  Camera,
-  Plus,
-  Trash2,
-  Calendar,
-  AlignLeft,
-  Info,
-} from "lucide-react";
+import { X, CheckCircle } from "lucide-react";
 import { N_Incidencia } from "../Negocio/N_Incidencia";
 import { N_Cierre_Incidencia } from "../Negocio/N_Cierre_Incidencia";
 import { N_Encargado_Mantenimiento } from "../Negocio/N_Encargado_Mantenimiento";
@@ -171,222 +162,230 @@ export default function P_Finalizar_Incidencia({ onClose, onSuccess }: Props) {
   if (!incidencia) return null;
 
   return (
-    <div className="fixed inset-0 z-150 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-2xl rounded-[28px] border border-white/10 bg-[#16161c] shadow-2xl p-8 my-8">
-        <button
-          onClick={onClose}
-          className="absolute right-5 top-5 rounded-full p-2 text-white/50 hover:bg-white/10 hover:text-white transition outline-none"
-        >
-          <X className="h-5 w-5" />
-        </button>
+    <div className="fixed inset-0 z-150 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+      {incidencia.estado !== "Resuelto" ? (
+        /* =====================================================================
+            MODAL DE REGISTRO DE FINALIZACIÓN (DISEÑO ORIGINAL)
+        ======================================================================*/
+        <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl border border-white/10 bg-[#16161c] shadow-2xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 hover:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+          <div className="p-6">
+            <button
+              onClick={onClose}
+              className="absolute right-4 top-4 rounded-full p-2 text-white/50 hover:bg-white/10 hover:text-white transition outline-none"
+            >
+              <X className="h-5 w-5" />
+            </button>
 
-        {/* CABECERA DINÁMICA */}
-        <div className="mb-6 text-center">
-          <div
-            className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[18px] border shadow-inner ${incidencia.estado === "Resuelto" ? "bg-blue-500/10 border-blue-500/20" : "bg-green-500/10 border-green-500/20"}`}
-          >
-            {incidencia.estado === "Resuelto" ? (
-              <Info className="h-7 w-7 text-blue-400" />
-            ) : (
-              <CheckCircle className="h-7 w-7 text-green-400" />
-            )}
-          </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">
-            {incidencia.estado === "Resuelto"
-              ? "Detalles del Cierre"
-              : "Finalizar Incidencia"}
-          </h2>
-          <p className="mt-1 text-sm text-white/50">
-            {incidencia.estado === "Resuelto"
-              ? incidencia.titulo
-              : "Registra las evidencias del trabajo realizado."}
-          </p>
-        </div>
-
-        {incidencia.estado === "Resuelto" ? (
-          /* MODO VISUALIZACIÓN */
-          <div className="space-y-6 animate-fade-in">
-            <div className="rounded-xl border border-white/10 bg-white/5 p-5">
-              <div className="flex items-center gap-2 mb-2 text-white/90 font-bold uppercase tracking-wider text-xs">
-                <AlignLeft className="h-4 w-4 text-[#a08a68]" />
-                Observación General
+            <div className="mb-4 text-center mt-2">
+              <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-green-500/10 border border-green-500/20 shadow-inner">
+                <CheckCircle className="h-5 w-5 text-green-400" />
               </div>
-              <p className="text-sm text-white/70 italic">
-                {cierreSeleccionado?.observacion || "Sin anotación general."}
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Finalizar Incidencia
+              </h2>
+              <p className="mt-1 text-xs text-white/50">
+                Añade fotos y descripciones para dar por solucionado el
+                problema.
               </p>
-              <div className="mt-4 flex items-center gap-2 text-[10px] text-white/40">
-                <Calendar className="h-3 w-3" />
-                Cerrado el: {formatearFecha(cierreSeleccionado?.fecha)}
-              </div>
             </div>
 
             <div className="space-y-4">
-              <label className="text-xs font-semibold text-white/90 uppercase tracking-wider block">
-                Evidencias Fotográficas
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {cierreSeleccionado?.detalle_cierre_incidencias?.map(
-                  (detalle: any, index: number) => (
-                    <div
-                      key={index}
-                      className="rounded-xl border border-white/5 bg-white/5 p-4 flex flex-col gap-3"
-                    >
-                      {detalle.imagen_solucion && (
-                        <div
-                          className="aspect-video rounded-lg overflow-hidden border border-white/10 bg-black/20 cursor-pointer"
-                          onClick={() =>
-                            setImagenSeleccionada(detalle.imagen_solucion)
-                          }
-                        >
-                          <img
-                            src={detalle.imagen_solucion}
-                            alt="Solución"
-                            className="h-full w-full object-cover hover:scale-105 transition-transform"
-                          />
-                        </div>
-                      )}
-                      <p className="text-xs text-white/60 line-clamp-2 italic">
-                        {detalle.descripcion || "Sin descripción fotográfica."}
-                      </p>
-                    </div>
-                  ),
-                )}
-              </div>
-            </div>
-
-            {obtenerSesionEncargado() && (
-              <button
-                onClick={eliminarCierre}
-                className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl bg-red-600/20 border border-red-500/50 px-6 py-3.5 text-sm font-bold text-red-400 transition-all hover:bg-red-600 hover:text-white active:scale-95 shadow-lg shadow-red-900/20"
-              >
-                <Trash2 className="h-4 w-4" />
-                Eliminar Cierre y Reabrir Incidencia
-              </button>
-            )}
-          </div>
-        ) : (
-          /* MODO FORMULARIO */
-          <div className="space-y-6 animate-fade-in">
-            <div>
-              <label className="mb-2 block text-xs font-semibold text-white/90 uppercase tracking-wider">
-                Observación General
-              </label>
-              <textarea
-                placeholder="Describe el trabajo realizado..."
-                value={observacion}
-                onChange={(e) => setObservacion(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none focus:border-[#a08a68] focus:bg-white/10 transition-colors min-h-24 resize-y"
-              />
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-white/90 uppercase tracking-wider">
-                  Evidencias Fotográficas
-                </label>
-                <button
-                  type="button"
-                  onClick={agregarDetalle}
-                  className="flex items-center gap-1.5 text-xs font-bold text-[#a08a68] hover:text-[#cbb592] transition-colors"
+              {detallesCierre.map((evidencia, index) => (
+                <div
+                  key={index}
+                  className="rounded-xl border border-white/10 bg-[#1e1e24] p-4 relative overflow-hidden"
                 >
-                  <Plus className="h-4 w-4" />
-                  Agregar Foto
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {detallesCierre.map((detalle, index) => (
-                  <div
-                    key={index}
-                    className="relative group rounded-2xl border border-white/5 bg-white/5 p-4 space-y-3 transition-all hover:bg-white/10"
-                  >
+                  {detallesCierre.length > 1 && (
                     <button
-                      type="button"
                       onClick={() => eliminarDetalle(index)}
-                      className="absolute -top-2 -right-2 h-7 w-7 flex items-center justify-center rounded-full bg-red-500/80 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 z-10"
+                      className="absolute right-2 top-2 p-1.5 text-red-400 hover:bg-red-500/20 rounded-md transition"
+                      title="Eliminar evidencia"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <X className="h-4 w-4" />
                     </button>
-
-                    <div className="relative aspect-video rounded-xl bg-black/40 border border-white/10 flex items-center justify-center overflow-hidden">
-                      {detalle.preview ? (
-                        <img
-                          src={detalle.preview}
-                          alt="Preview"
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center gap-2 text-white/30">
-                          <Camera className="h-8 w-8" />
-                          <span className="text-[10px] font-medium">
-                            SIN FOTO
-                          </span>
-                        </div>
-                      )}
+                  )}
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="sm:w-2/5">
+                      <label className="mb-1.5 block text-[11px] font-semibold text-white/90">
+                        Imagen
+                      </label>
                       <input
                         type="file"
                         accept="image/*"
                         onChange={(e) => {
-                          if (e.target.files?.[0]) {
-                            handleDetalleChange(
-                              index,
-                              "file",
-                              e.target.files[0],
-                            );
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            handleDetalleChange(index, "file", file);
                           }
                         }}
-                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        className="w-full text-[11px] text-white/50 file:mr-2 file:rounded-lg file:border file:border-white/10 file:bg-[#2a2a35] file:px-2.5 file:py-1.5 file:text-[11px] file:font-semibold file:text-white hover:file:bg-[#343440] transition cursor-pointer"
+                      />
+                      {evidencia.preview && (
+                        <div className="mt-2 rounded-lg overflow-hidden border border-white/10 bg-black/20">
+                          <img
+                            src={evidencia.preview}
+                            alt="Previsualización"
+                            className="h-20 w-full object-cover opacity-90 hover:opacity-100 transition-opacity"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div className="sm:w-3/5">
+                      <label className="mb-1.5 block text-[11px] font-semibold text-white/90">
+                        Descripción de la evidencia
+                      </label>
+                      <textarea
+                        value={evidencia.descripcion}
+                        onChange={(e) =>
+                          handleDetalleChange(
+                            index,
+                            "descripcion",
+                            e.target.value,
+                          )
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-[#16161c] px-3 py-2 text-xs text-white outline-none focus:border-green-500/50 focus:bg-[#1a1a22] transition-colors resize-none h-22 custom-scrollbar"
+                        placeholder="Ej: Se reemplazó la pieza por una nueva..."
                       />
                     </div>
-
-                    <input
-                      type="text"
-                      placeholder="Descripción de la foto..."
-                      value={detalle.descripcion}
-                      onChange={(e) =>
-                        handleDetalleChange(
-                          index,
-                          "descripcion",
-                          e.target.value,
-                        )
-                      }
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white outline-none focus:border-[#a08a68]"
-                    />
                   </div>
-                ))}
+                </div>
+              ))}
+
+              <button
+                onClick={agregarDetalle}
+                className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-white/5 px-4 py-2.5 text-xs font-semibold text-white/50 hover:bg-white/10 hover:text-white transition-all"
+              >
+                + Añadir otra evidencia
+              </button>
+
+              <div className="pt-3 border-t border-white/5 mt-3 mb-1">
+                <label className="mb-1.5 block text-[13px] font-bold text-white/90">
+                  Anotación General del Cierre
+                </label>
+                <textarea
+                  value={observacion}
+                  onChange={(e) => setObservacion(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-[#1e1e24] px-4 py-3 text-xs text-white outline-none focus:border-green-500/50 focus:bg-[#23232a] transition-colors resize-none h-20 custom-scrollbar"
+                  placeholder="Conclusiones finales..."
+                />
               </div>
+
+              <button
+                onClick={registrarCierre}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-green-600 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-green-500 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)] active:scale-[0.98]"
+              >
+                Confirmar y Finalizar ✓
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* =====================================================================
+            MODAL DE VER DETALLES DEL CIERRE (DISEÑO ORIGINAL)
+        ======================================================================*/
+        <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl border border-white/10 bg-[#16161c] shadow-2xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 hover:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+          <div className="p-6">
+            <button
+              onClick={onClose}
+              className="absolute right-4 top-4 rounded-full p-2 text-white/50 hover:bg-white/10 hover:text-white transition outline-none"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="mb-4 text-center mt-2">
+              <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 shadow-inner">
+                <CheckCircle className="h-5 w-5 text-blue-400" />
+              </div>
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Detalles del Cierre
+              </h2>
+              <p className="mt-1 text-xs text-white/50">{incidencia?.titulo}</p>
             </div>
 
-            <button
-              onClick={registrarCierre}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#a08a68] px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-[#8e7a5c] active:scale-[0.98] shadow-lg shadow-[#a08a68]/20"
-            >
-              Confirmar Finalización ✓
-            </button>
-          </div>
-        )}
+            <div className="space-y-4 text-white">
+              <div className="rounded-xl border border-white/10 bg-[#1e1e24] p-4">
+                <h3 className="text-[13px] font-bold text-white/90 mb-2">
+                  Anotación General
+                </h3>
+                <p className="text-xs text-white/70">
+                  {cierreSeleccionado?.observacion || "Sin anotación general."}
+                </p>
+                <p className="text-[10px] text-white/40 mt-2">
+                  Cerrado el: {formatearFecha(cierreSeleccionado?.fecha)}
+                </p>
+              </div>
 
-        {/* MODAL INTERNO PARA VER IMAGEN EN GRANDE */}
-        {imagenSeleccionada && (
-          <div
-            className="fixed inset-0 z-200 flex items-center justify-center bg-black/95 p-4 animate-fade-in backdrop-blur-sm"
-            onClick={() => setImagenSeleccionada(null)}
-          >
-            <button
-              className="absolute right-5 top-5 p-2 text-white/50 hover:text-white transition-colors"
-              onClick={() => setImagenSeleccionada(null)}
-            >
-              <X className="h-8 w-8" />
-            </button>
-            <img
-              src={imagenSeleccionada}
-              alt="Zoom"
-              className="max-w-full max-h-[90vh] rounded-xl object-contain shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            />
+              {cierreSeleccionado?.detalle_cierre_incidencias?.map(
+                (detalle: any, index: number) => (
+                  <div
+                    key={index}
+                    className="rounded-xl border border-white/10 bg-[#1e1e24] p-4 flex flex-col sm:flex-row gap-4"
+                  >
+                    {detalle.imagen_solucion && (
+                      <div
+                        className="sm:w-2/5 rounded-lg overflow-hidden border border-white/10 bg-black/20 cursor-pointer"
+                        onClick={() =>
+                          setImagenSeleccionada(detalle.imagen_solucion)
+                        }
+                      >
+                        <img
+                          src={detalle.imagen_solucion}
+                          alt="Evidencia Solución"
+                          className="h-20 w-full object-cover opacity-90 hover:opacity-100 transition-opacity"
+                        />
+                      </div>
+                    )}
+                    <div
+                      className={
+                        detalle.imagen_solucion ? "sm:w-3/5" : "w-full"
+                      }
+                    >
+                      <h3 className="text-[11px] font-semibold text-white/90 mb-1">
+                        Descripción de evidencia
+                      </h3>
+                      <p className="text-xs text-white/70">
+                        {detalle.descripcion || "Sin descripción."}
+                      </p>
+                    </div>
+                  </div>
+                ),
+              )}
+
+              {obtenerSesionEncargado() && (
+                <button
+                  onClick={eliminarCierre}
+                  className="mt-6 w-full flex items-center justify-center gap-2 rounded-xl bg-red-600/20 border border-red-500/50 px-6 py-3 text-sm font-bold text-red-500 transition-all hover:bg-red-600 hover:text-white hover:shadow-[0_0_20px_rgba(220,38,38,0.3)] active:scale-[0.98]"
+                >
+                  <X className="h-4 w-4" />
+                  Eliminar Cierre y Reabrir Incidencia
+                </button>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* MODAL DE VISUALIZACIÓN DE IMAGEN */}
+      {imagenSeleccionada && (
+        <div
+          className="fixed inset-0 z-200 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-fade-in"
+          onClick={() => setImagenSeleccionada(null)}
+        >
+          <button
+            onClick={() => setImagenSeleccionada(null)}
+            className="absolute right-5 top-5 rounded-full p-2 text-white/50 hover:bg-white/10 hover:text-white transition outline-none"
+          >
+            <X className="h-8 w-8" />
+          </button>
+
+          <img
+            src={imagenSeleccionada}
+            alt="Evidencia"
+            className="max-w-full max-h-[90vh] rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.5)] object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
