@@ -7,6 +7,7 @@ export interface Incidencia {
   imagen_evidencia?: string;
   estado: string;
   imagen_solucion?: string;
+  archivoImagen?: File | null;
   id_facultad?: number;
   id_encargado?: number;
   id_reportante?: number;

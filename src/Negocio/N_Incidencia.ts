@@ -1,24 +1,26 @@
 import { D_Incidencia } from "../Datos/D_Incidencia/D_Incidencia";
-import type { Incidencia } from "../Datos/D_Incidencia/Incidencia";
 import { N_Clasificacion_Incidencia } from "./N_Clasificacion_Incidencia";
 import { N_Facultad } from "./N_Facultad";
 import { N_Encargado_Mantenimiento } from "./N_Encargado_Mantenimiento";
+import { ManejadorValidacion } from "./ManejadorValidacion";
+import { ManejadorAntiSpam } from "./ManejadorAntiSpam";
+import { ManejadorSubidaImagen } from "./ManejadorSubidaImagen";
+import { ManejadorPersistencia } from "./ManejadorPersistencia";
+import type { Incidencia } from "../Datos/D_Incidencia/Incidencia";
 
 export class N_Incidencia {
   static async registrar(incidencia: Incidencia) {
-    if (
-      !incidencia.titulo.trim() ||
-      !incidencia.descripcion.trim() ||
-      !incidencia.ubicacion.trim() ||
-      !incidencia.fecha ||
-      !incidencia.id_clasificacion!.toString().trim() ||
-      !incidencia.id_reportante!.toString().trim() ||
-      !incidencia.id_facultad!.toString().trim()
-    ) {
-      throw new Error("Todos los campos son obligatorios");
-    }
-    console.log("Validación de campos exitosa:", incidencia);
-    await D_Incidencia.registrar(incidencia);
+    const validador = new ManejadorValidacion();
+    const antispam = new ManejadorAntiSpam();
+    const subidor = new ManejadorSubidaImagen();
+    const persistidor = new ManejadorPersistencia();
+
+    validador
+      .establecerSucesor(antispam)
+      .establecerSucesor(subidor)
+      .establecerSucesor(persistidor);
+
+    await validador.ManejarPeticion(incidencia);
   }
 
   static async listarPorReportante(id_reportante: number) {
@@ -102,34 +104,8 @@ export class N_Incidencia {
     return incidenciasCompletas;
   }
 
-  static convertirIMG_URL = async (file: File): Promise<string | null> => {
-    const CLOUD_NAME = "dmfl4ahiy";
-    const UPLOAD_PRESET = "ml_default";
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", UPLOAD_PRESET);
-
-    try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Error al subir la imagen a Cloudinary");
-      }
-
-      const data = await response.json();
-      return data.secure_url; // secure_url es la URL con HTTPS
-    } catch (error) {
-      console.error("Error subiendo imagen:", error);
-      return null;
-    }
-  };
+  // El método convertirIMG_URL ha sido removido y desacoplado de la clase de negocio.
+  // Su lógica ahora reside de forma limpia en la clase AdaptableCloudinary del patrón Adapter.
 
   static async asignarEncargado(id_incidencia: number, id_encargado: number) {
     if (!id_incidencia) {

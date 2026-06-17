@@ -3,6 +3,7 @@ import { X, CheckCircle } from "lucide-react";
 import { N_Incidencia } from "../Negocio/N_Incidencia";
 import { N_Cierre_Incidencia } from "../Negocio/N_Cierre_Incidencia";
 import { N_Encargado_Mantenimiento } from "../Negocio/N_Encargado_Mantenimiento";
+import { AdaptadorCloudinary } from "../Negocio/AdaptadorCloudinary";
 
 interface Props {
   onClose: () => void;
@@ -61,7 +62,7 @@ export default function P_Finalizar_Incidencia({ onClose, onSuccess }: Props) {
         detallesCierre
           .filter((d) => d.file)
           .map(async (d) => {
-            const url = await N_Incidencia.convertirIMG_URL(d.file!);
+            const url = await new AdaptadorCloudinary().PeticionSubir(d.file!);
             return {
               id: 0,
               id_cierre_incidencia: 0,

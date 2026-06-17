@@ -65,10 +65,7 @@ export default function P_RegistroIncidencia() {
     }
 
     try {
-      const imagenURL = await N_Incidencia.convertirIMG_URL(imagenEvidencia!);
-      const fechaActual = new Date();
-
-      const nuevaIncidencia = {
+      const incidencia = {
         id: 0,
         titulo,
         descripcion,
@@ -76,12 +73,12 @@ export default function P_RegistroIncidencia() {
         id_facultad: parseInt(idFacultad),
         id_clasificacion: parseInt(idClasificacion),
         id_reportante: reportante.id,
-        fecha: fechaActual,
+        fecha: new Date(),
         estado: "Reportado",
-        imagen_evidencia: imagenURL || undefined,
+        archivoImagen: imagenEvidencia,
       };
 
-      await N_Incidencia.registrar(nuevaIncidencia);
+      await N_Incidencia.registrar(incidencia);
 
       alert("Incidencia reportada con éxito.");
 
@@ -94,7 +91,7 @@ export default function P_RegistroIncidencia() {
       setEvidencia(null);
     } catch (error) {
       console.error(error);
-      alert("Ocurrió un error al registrar la incidencia.");
+      alert((error as Error).message || "Ocurrió un error al registrar la incidencia.");
     }
   };
 

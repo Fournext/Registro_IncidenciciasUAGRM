@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs";
 import { N_Reportante } from "./N_Reportante";
 import { N_Decano } from "./N_Decano";
 import { N_Encargado_Mantenimiento } from "./N_Encargado_Mantenimiento";
-import { N_CerrarSesion } from "./N_CerrarSesion";
 export class N_InicioSesión {
   static async loginReportante(email: string, contrasena: string) {
     const reportante = await N_Reportante.buscarPorEmail(email);
